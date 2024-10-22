@@ -1,3 +1,8 @@
+provider "aws" {
+  region = "us-east-1"
+  alias  = "us-east-1"
+}
+
 module "static_site" {
   source = "git::https://github.com/UKHomeOffice/core-cloud-static-site-terraform.git?ref=0.0.1"
 
