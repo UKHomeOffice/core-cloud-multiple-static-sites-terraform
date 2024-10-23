@@ -9,7 +9,3 @@ variable "cloud_front_default_vars" {
 variable "aws_region" {
   type = string
 }
-
-variable "sites" {
-  type = list(string)
-}
