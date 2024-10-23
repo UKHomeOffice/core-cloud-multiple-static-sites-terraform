@@ -13,7 +13,7 @@ module "static_site" {
   cloud_front_default_vars = var.cloud_front_default_vars
   aws_region               = var.aws_region
 #  tenant_vars              = each.value
-  tenant_vars              = yamldecode(file("${each.value}"))
+  tenant_vars              = yamldecode(file("each.value"))
 
   providers = {
     aws.us-east-1 = aws.us-east-1
