@@ -13,6 +13,6 @@ module "static_site" {
   tenant_vars              = var.tenant_vars.each.value
 
   providers {
-    aws.us-east-1          = aws.us-east-1
+    aws.us-east-1 = aws.us-east-1
   }
 }
