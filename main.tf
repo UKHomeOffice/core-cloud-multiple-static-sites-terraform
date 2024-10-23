@@ -11,4 +11,8 @@ module "static_site" {
   cloud_front_default_vars = var.cloud_front_default_vars
   aws_region               = var.aws_region
   tenant_vars              = var.tenant_vars.each.value
+
+  providers {
+    aws.us-east-1          = aws.us-east-1
+  }
 }
