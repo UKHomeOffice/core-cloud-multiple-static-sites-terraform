@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 module "static_site" {
-  source = "git::https://github.com/UKHomeOffice/core-cloud-static-site-terraform.git?ref=0.1.3"
+  source = "git::https://github.com/UKHomeOffice/core-cloud-static-site-terraform.git?ref=0.1.4"
 
   for_each = var.tenant_vars
 
