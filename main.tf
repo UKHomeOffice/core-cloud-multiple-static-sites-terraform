@@ -10,7 +10,7 @@ module "waf" {
 }
 
 module "static_site" {
-  source = "git::https://github.com/UKHomeOffice/core-cloud-static-site-terraform.git?ref=2.0.0"
+  source = "git::https://github.com/UKHomeOffice/core-cloud-static-site-terraform.git?ref=0.2.0"
 
   for_each = var.tenant_vars
 
