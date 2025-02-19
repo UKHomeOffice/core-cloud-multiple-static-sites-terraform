@@ -15,7 +15,6 @@ variable "env_name" {
 }
 
 variable "platform_tags" {
-  type = list(string)
-  
+  type = map(string)
 }
 
