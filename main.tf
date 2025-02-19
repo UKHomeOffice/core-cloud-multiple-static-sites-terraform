@@ -7,6 +7,7 @@ module "waf" {
   source            = "git::https://github.com/UKHomeOffice/core-cloud-static-sites-wafv2-terraform.git?ref=0.4.6"
   waf_acl_name      = "cc-static-site-${var.env_name}-acl"
   tags              = var.platform_tags
+  scope             = "CLOUDFRONT"
 }
 
 module "static_site" {
