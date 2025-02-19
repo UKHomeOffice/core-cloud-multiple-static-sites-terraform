@@ -9,3 +9,13 @@ variable "cloud_front_default_vars" {
 variable "aws_region" {
   type = string
 }
+
+variable "env_name" {
+  type = string 
+}
+
+variable "platform_tags" {
+  type = list(string)
+  
+}
+
