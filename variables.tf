@@ -10,11 +10,7 @@ variable "aws_region" {
   type = string
 }
 
-variable "web_acl" {
-  type = string
-}
-
-variable "env" {
+variable "env_name" {
   type = string 
 }
 
