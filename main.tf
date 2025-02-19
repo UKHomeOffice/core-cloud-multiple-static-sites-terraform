@@ -18,7 +18,7 @@ module "static_site" {
   cloud_front_default_vars = var.cloud_front_default_vars
   aws_region               = var.aws_region
   tenant_vars              = each.value
-  waf_acl_id               = module.waf.waf_acl_id
+  waf_acl_id               = module.waf.waf_acl_arn # cloudfront_distribution input variable waf_acl_id is actually the arn
   providers = {
     aws.us-east-1 = aws.us-east-1
   }
