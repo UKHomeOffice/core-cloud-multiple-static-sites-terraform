@@ -11,11 +11,11 @@ module "waf" {
 }
 
 module "cloudfront" {
-  source = "cloudfront-function-terraform/"
+  source = "./cloudfront-function-terraform/"
 }
 
 module "static_site" {
-  source = "git::https://github.com/UKHomeOffice/core-cloud-static-site-terraform.git?ref=0.3.0"
+  source = "git::https://github.com/UKHomeOffice/core-cloud-static-site-terraform.git?ref=0.3.1"
 
   for_each = var.tenant_vars
 
