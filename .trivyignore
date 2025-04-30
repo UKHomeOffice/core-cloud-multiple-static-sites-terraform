@@ -1,0 +1,5 @@
+#Ignore requirement for S3 logging bucket as per CUDOS setup instructions
+AVD-AWS-0089
+
+#Ignore requirement for customer managed key for S3 encryption as per CUDOS setup instructions
+AVD-AWS-0132
