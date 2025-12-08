@@ -5,19 +5,13 @@ provider "aws" {
 
 module "waf" {
   source       = "git::https://github.com/UKHomeOffice/core-cloud-static-sites-wafv2-terraform.git?ref=0.4.6"
-  
-  for_each     = var.tenant_vars
-
-  waf_acl_name = "cc-static-site-${var.env_name}-${each.value.component}-acl"
+  waf_acl_name = "cc-static-site-${var.env_name}-acl"
   tags         = var.platform_tags
   scope        = "CLOUDFRONT"
 }
 
 module "cloudfront" {
-  for_each     = var.tenant_vars
-    
   source = "./cloudfront-function-terraform/"
-  component = each.value.component
 }
 
 module "static_site" {
