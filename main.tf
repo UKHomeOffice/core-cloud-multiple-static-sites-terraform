@@ -11,7 +11,8 @@ module "waf" {
 }
 
 module "cloudfront" {
-  source = "./cloudfront-function-terraform/"
+  env_name = var.env_name
+  source   = "./cloudfront-function-terraform/"
 }
 
 module "static_site" {
