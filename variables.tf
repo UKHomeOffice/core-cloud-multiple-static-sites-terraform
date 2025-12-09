@@ -11,7 +11,7 @@ variable "aws_region" {
 }
 
 variable "env_name" {
-  type = string 
+  type = string
 }
 
 variable "platform_tags" {
@@ -19,7 +19,7 @@ variable "platform_tags" {
 }
 
 variable "cloudfront_function_name" {
-  type        = string
-  default     = "StaticSiteReWriteDefaultIndexRequest"
+  type    = string
+  default = "StaticSiteReWriteDefaultIndexRequest"
 }
 

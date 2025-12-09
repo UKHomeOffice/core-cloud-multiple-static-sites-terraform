@@ -11,7 +11,7 @@ module "waf" {
 }
 
 module "cloudfront" {
-  cloudfront_function_name = var.cloudfront_function_name
+  name   = var.cloudfront_function_name
   source   = "./cloudfront-function-terraform/"
 }
 
