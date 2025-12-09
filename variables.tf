@@ -18,3 +18,8 @@ variable "platform_tags" {
   type = map(string)
 }
 
+variable "cloudfront_function_name" {
+  type        = string
+  default     = "StaticSiteReWriteDefaultIndexRequest"
+}
+
