@@ -1,3 +1,4 @@
 variable "cloudfront_function_name" {
-  type = string 
+  type        = string
+  default     = "StaticSiteReWriteDefaultIndexRequest"
 }
