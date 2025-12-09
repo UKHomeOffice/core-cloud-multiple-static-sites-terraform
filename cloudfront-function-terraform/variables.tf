@@ -1,3 +1,3 @@
-variable "env_name" {
+variable "cloudfront_function_name" {
   type = string 
 }
