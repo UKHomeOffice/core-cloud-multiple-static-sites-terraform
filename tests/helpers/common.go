@@ -132,10 +132,6 @@ func TFOptions(t *testing.T) *terraform.Options {
 	tfOnce.Do(func() {
 		path := GetPaths()
 
-		region := getenvOrDefault("AWS_REGION", "eu-west-2")
-		profile := getenvOrDefault("AWS_PROFILE", "static-site-test")
-		awsRegion = region
-
 		useVarFile := fileExists(path.VarFile)
 		if useVarFile {
 			log.Printf("[HELPERS] Using var-file: %s", path.VarFile)
@@ -145,9 +141,9 @@ func TFOptions(t *testing.T) *terraform.Options {
 
 		// Build Vars from secrets
 		vars := map[string]interface{}{
-			"aws_region": getenvOrDefault("TF_VAR_AWS_REGION", region),
-			"env_name":   getenvOrDefault("TF_VAR_ENV_NAME", "automation-test"),
-			"cloudfront_function_name": getenvOrDefault("TF_VAR_CLOUDFRONT_FUNCTION_NAME",
+			"aws_region": getEnvOrDefault("TF_VAR_AWS_REGION", "eu-west-2"),
+			"env_name":   getEnvOrDefault("TF_VAR_ENV_NAME", "automation-test"),
+			"cloudfront_function_name": getEnvOrDefault("TF_VAR_CLOUDFRONT_FUNCTION_NAME",
 				"StaticSiteReWriteDefaultIndexRequest-automation-test"),
 			"cloud_front_default_vars": decodeJSONOrEmptyMap("TF_VAR_CLOUD_FRONT_DEFAULT_VARS"),
 			"platform_tags":            decodeJSONOrEmptyMap("TF_VAR_PLATFORM_TAGS"),
@@ -157,9 +153,9 @@ func TFOptions(t *testing.T) *terraform.Options {
 		opts := &terraform.Options{
 			TerraformDir: path.TfDir,
 			EnvVars: map[string]string{
-				"AWS_PROFILE":      profile,
-				"AWS_REGION":       region,
-				"TF_IN_AUTOMATION": getenvOrDefault("TF_IN_AUTOMATION", "true"),
+				// Needed for local run
+				// "AWS_PROFILE":      "static-site-test",
+				"TF_IN_AUTOMATION": getEnvOrDefault("TF_IN_AUTOMATION", "true"),
 			},
 			VarFiles: func() []string {
 				if useVarFile {
@@ -183,11 +179,11 @@ func fileExists(path string) bool {
 	return err == nil && !info.IsDir()
 }
 
-func getenvOrDefault(key, def string) string {
+func getEnvOrDefault(key, value string) string {
 	if v := os.Getenv(key); v != "" {
 		return v
 	}
-	return def
+	return value
 }
 
 // Reads JSON object from env var `key` into map[string]interface{}.
