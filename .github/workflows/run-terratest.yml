@@ -45,7 +45,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::992382599151:role/AWS-Terragrunt-Static-Site-Apply-Role
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.TF_VAR_AWS_REGION }}
 
       - name: Download Go Modules
         run: go mod download
