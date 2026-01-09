@@ -26,6 +26,7 @@ jobs:
       TF_VAR_CLOUD_FRONT_DEFAULT_VARS:  ${{ secrets.TF_VAR_CLOUD_FRONT_DEFAULT_VARS }}
       TF_VAR_PLATFORM_TAGS:             ${{ secrets.TF_VAR_PLATFORM_TAGS }}
       TF_VAR_TENANT_VARS:               ${{ secrets.TF_VAR_TENANT_VARS }}
+      ACCOUNT_ID: ${{ vars.ACCOUNT_ID }}
 
     steps:
       - name: Checkout
@@ -41,10 +42,12 @@ jobs:
         with:
           terraform_version: 1.9.8
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        name: Configure AWS IdP Credentials
         with:
-          role-to-assume: arn:aws:iam::992382599151:role/AWS-Terragrunt-Static-Site-Apply-Role
+          role-to-assume: arn:aws:iam::${{ vars.ACCOUNT_ID }}:role/AWS-Terragrunt-Static-Site-Apply-Role
+          role-session-name: GitHubActions
+          retry-max-attempts: 5
           aws-region: eu-west-2
 
       - name: Download Go Modules
