@@ -1,0 +1,63 @@
+
+name: Terratest
+
+on:
+  pull_request:
+    types:
+      - labeled
+      - unlabeled
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  terratest:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      TF_IN_AUTOMATION: true
+      TF_VAR_AWS_REGION:                ${{ secrets.TF_VAR_AWS_REGION }}
+      TF_VAR_ENV_NAME:                  ${{ secrets.TF_VAR_ENV_NAME }}
+      TF_VAR_CLOUDFRONT_FUNCTION_NAME:  ${{ secrets.TF_VAR_CLOUDFRONT_FUNCTION_NAME }}
+      TF_VAR_CLOUD_FRONT_DEFAULT_VARS:  ${{ secrets.TF_VAR_CLOUD_FRONT_DEFAULT_VARS }}
+      TF_VAR_PLATFORM_TAGS:             ${{ secrets.TF_VAR_PLATFORM_TAGS }}
+      TF_VAR_TENANT_VARS:               ${{ secrets.TF_VAR_TENANT_VARS }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::992382599151:role/AWS-Terragrunt-Static-Site-Apply-Role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download Go Modules
+        run: go mod download
+
+      - name: Run Terratest
+        run: |
+          cd tests
+          go test -v -timeout 45m
+
+      - name: Upload Test Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: terratest-logs
+          path: /tmp/terratest-*
