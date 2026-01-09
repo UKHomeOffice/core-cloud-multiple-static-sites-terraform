@@ -52,12 +52,12 @@ jobs:
           aws-region: eu-west-2
 
       - name: Download Go Modules
-        run: go mod download
-
-      - name: Run Terratest
         run: |
           cd tests
-          go test -v -timeout 45m
+          go mod download
+
+      - name: Run Terratest
+        run:  go test -v -timeout 45m
 
       - name: Upload Test Logs
         if: failure()
