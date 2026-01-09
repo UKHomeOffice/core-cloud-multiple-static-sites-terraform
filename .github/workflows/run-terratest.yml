@@ -57,7 +57,9 @@ jobs:
           go mod download
 
       - name: Run Terratest
-        run:  go test -v -timeout 45m
+        run: |
+          cd tests
+          go test -v -timeout 45m
 
       - name: Upload Test Logs
         if: failure()
