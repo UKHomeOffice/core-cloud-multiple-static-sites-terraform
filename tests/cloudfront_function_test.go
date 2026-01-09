@@ -10,6 +10,7 @@ import (
 	helpers "github.com/core-cloud-multiple-static-sites-terraform/tests/helpers"
 
 	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
+
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
@@ -168,6 +169,7 @@ func Test_Cloudfront_Function(t *testing.T) {
 
 	// Destroy stage
 	defer test_structure.RunTestStage(t, "destroy", func() {
+		helpers.CleanUpBucket(t)
 		log.Printf("[TF] Destroy starting…")
 		terraform.Destroy(t, tfOpts)
 		log.Printf("[TF] Destroy completed.")
