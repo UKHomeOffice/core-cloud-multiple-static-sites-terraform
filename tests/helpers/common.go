@@ -155,6 +155,7 @@ func TFOptions(t *testing.T) *terraform.Options {
 			EnvVars: map[string]string{
 				// Needed for local run
 				// "AWS_PROFILE":      "static-site-test",
+				// Set this to false for local run for additional information
 				"TF_IN_AUTOMATION": getEnvOrDefault("TF_IN_AUTOMATION", "true"),
 			},
 			VarFiles: func() []string {
@@ -172,8 +173,6 @@ func TFOptions(t *testing.T) *terraform.Options {
 	return tfOpts
 }
 
-// --- helpers ---
-
 func fileExists(path string) bool {
 	info, err := os.Stat(path)
 	return err == nil && !info.IsDir()
@@ -189,12 +188,12 @@ func getEnvOrDefault(key, value string) string {
 // Reads JSON object from env var `key` into map[string]interface{}.
 // If empty/invalid, returns empty map and logs a warning.
 func decodeJSONOrEmptyMap(key string) map[string]interface{} {
-	val := os.Getenv(key)
-	if val == "" {
+	value := os.Getenv(key)
+	if value == "" {
 		return map[string]interface{}{}
 	}
 	var out map[string]interface{}
-	if err := json.Unmarshal([]byte(val), &out); err != nil {
+	if err := json.Unmarshal([]byte(value), &out); err != nil {
 		log.Printf("[HELPERS] WARNING: invalid JSON in %s: %v; using empty object", key, err)
 		return map[string]interface{}{}
 	}
