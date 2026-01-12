@@ -60,10 +60,3 @@ jobs:
         run: |
           cd tests
           go test -v -timeout 45m
-
-      - name: Upload Test Logs
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: terratest-logs
-          path: /tmp/terratest-*
