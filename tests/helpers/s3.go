@@ -24,7 +24,7 @@ type SeedItem struct {
 	HTML []byte
 }
 
-// SeedHTMLObjects uploads multiple HTML files to S3 with proper headers.
+// SeedHTMLObjects uploads multiple HTML files to S3
 func SeedHTMLObjects(
 	t require.TestingT,
 	context context.Context,
@@ -65,7 +65,6 @@ func CleanUpBucket(t *testing.T) {
 
 		var objectsToDelete []awss3types.ObjectIdentifier
 
-		// All versions
 		for _, v := range page.Versions {
 			objectsToDelete = append(objectsToDelete, awss3types.ObjectIdentifier{
 				Key:       v.Key,
@@ -73,7 +72,6 @@ func CleanUpBucket(t *testing.T) {
 			})
 		}
 
-		// Delete markers
 		for _, dm := range page.DeleteMarkers {
 			objectsToDelete = append(objectsToDelete, awss3types.ObjectIdentifier{
 				Key:       dm.Key,

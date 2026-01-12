@@ -125,7 +125,6 @@ func GetPaths() Paths {
 }
 
 // TFOptions returns the Terraform options for the tests.
-// - Uses test.tfvars if present; otherwise uses ALL-CAPS TF_VAR_* env vars.
 func TFOptions(t *testing.T) *terraform.Options {
 	t.Helper()
 
