@@ -135,7 +135,7 @@ func TFOptions(t *testing.T) *terraform.Options {
 		if useVarFile {
 			log.Printf("[HELPERS] Using var-file: %s", path.VarFile)
 		} else {
-			log.Printf("[HELPERS] var-file not found, falling back to ALL-CAPS TF_VAR_* envs")
+			log.Printf("[HELPERS] var-file not found, falling back to TF_VAR_* envs")
 		}
 
 		// Build Vars from secrets

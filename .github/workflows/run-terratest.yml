@@ -21,12 +21,12 @@ jobs:
 
     env:
       TF_IN_AUTOMATION: true
-      TF_VAR_AWS_REGION:                ${{ secrets.TF_VAR_AWS_REGION }}
-      TF_VAR_ENV_NAME:                  ${{ secrets.TF_VAR_ENV_NAME }}
-      TF_VAR_CLOUDFRONT_FUNCTION_NAME:  ${{ secrets.TF_VAR_CLOUDFRONT_FUNCTION_NAME }}
-      TF_VAR_CLOUD_FRONT_DEFAULT_VARS:  ${{ secrets.TF_VAR_CLOUD_FRONT_DEFAULT_VARS }}
-      TF_VAR_PLATFORM_TAGS:             ${{ secrets.TF_VAR_PLATFORM_TAGS }}
-      TF_VAR_TENANT_VARS:               ${{ secrets.TF_VAR_TENANT_VARS }}
+      TF_VAR_AWS_REGION:                ${{ vars.TF_VAR_AWS_REGION }}
+      TF_VAR_ENV_NAME:                  ${{ vars.TF_VAR_ENV_NAME }}
+      TF_VAR_CLOUDFRONT_FUNCTION_NAME:  ${{ vars.TF_VAR_CLOUDFRONT_FUNCTION_NAME }}
+      TF_VAR_CLOUD_FRONT_DEFAULT_VARS:  ${{ vars.TF_VAR_CLOUD_FRONT_DEFAULT_VARS }}
+      TF_VAR_PLATFORM_TAGS:             ${{ vars.TF_VAR_PLATFORM_TAGS }}
+      TF_VAR_TENANT_VARS:               ${{ vars.TF_VAR_TENANT_VARS }}
       ACCOUNT_ID: ${{ vars.ACCOUNT_ID }}
 
     steps:
