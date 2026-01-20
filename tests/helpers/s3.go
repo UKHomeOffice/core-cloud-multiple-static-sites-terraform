@@ -52,7 +52,8 @@ func CleanUpBucket(t *testing.T) {
 	context, config, _ := AWSConfig(t)
 	s3 := awss3.NewFromConfig(config)
 
-	bucket := TFOutput(t, "s3_bucket_name")
+	s3Output := TFOutputMap(t, tfOpts, "s3_bucket_name")
+	bucket := s3Output["corecloud_staticsite_terratest"]
 	require.NotEmpty(t, bucket, "bucket name cannot be empty during cleanup")
 
 	paginator := awss3.NewListObjectVersionsPaginator(s3, &awss3.ListObjectVersionsInput{
