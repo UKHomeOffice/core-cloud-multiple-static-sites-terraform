@@ -198,3 +198,11 @@ func decodeJSONOrEmptyMap(key string) map[string]interface{} {
 	}
 	return out
 }
+
+// TFOutputMap returns the Terraform output as a map.
+func TFOutputMap(t *testing.T, tfOpts *terraform.Options, name string) map[string]string {
+	t.Helper()
+	value, err := terraform.OutputMapE(t, tfOpts, name)
+	require.NoError(t, err)
+	return value
+}

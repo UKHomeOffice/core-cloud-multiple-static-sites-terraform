@@ -47,12 +47,14 @@ func Test_Cloudfront_Function(t *testing.T) {
 	context, config, region := helpers.AWSConfig(t)
 	log.Printf("[AWS] Region: %s", region)
 
-	bucketName := helpers.TFOutput(t, "s3_bucket_name")
-	require.NotEmpty(t, bucketName, "terraform output 's3_bucket_name' must not be empty")
+	s3Output := helpers.TFOutputMap(t, tfOpts, "s3_bucket_name")
+	bucketName := s3Output["corecloud_staticsite_terratest"]
+	require.NotEmpty(t, bucketName)
 	log.Printf("[TF] Output s3_bucket_name: %s", bucketName)
 
-	cfDomain := helpers.TFOutput(t, "cloudfront_distribution_domain_name")
-	require.NotEmpty(t, cfDomain, "terraform output 'cloudfront_distribution_domain_name' must not be empty")
+	cfOutput := helpers.TFOutputMap(t, tfOpts, "cloudfront_distribution_domain_name")
+	cfDomain := cfOutput["corecloud_staticsite_terratest"]
+	require.NotEmpty(t, cfDomain)
 	log.Printf("[TF] Output cloudfront_distribution_domain_name: %s", cfDomain)
 
 	// Seed files into the S3 bucket
