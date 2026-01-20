@@ -29,7 +29,7 @@ func Test_Cloudfront_Function(t *testing.T) {
 
 	// Destroy stage
 	defer test_structure.RunTestStage(t, "destroy", func() {
-		helpers.CleanUpBucket(t)
+		// helpers.CleanUpBucket(t)
 		log.Printf("[TF] Destroy starting…")
 		terraform.Destroy(t, tfOpts)
 		log.Printf("[TF] Destroy completed.")
