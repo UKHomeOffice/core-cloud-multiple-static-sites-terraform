@@ -1,0 +1,62 @@
+
+name: Terratest
+
+on:
+  pull_request:
+    types:
+      - labeled
+      - unlabeled
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  terratest:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+      actions: read
+
+    env:
+      TF_IN_AUTOMATION: true
+      TF_VAR_AWS_REGION:                ${{ vars.TF_VAR_AWS_REGION }}
+      TF_VAR_ENV_NAME:                  ${{ vars.TF_VAR_ENV_NAME }}
+      TF_VAR_CLOUDFRONT_FUNCTION_NAME:  ${{ vars.TF_VAR_CLOUDFRONT_FUNCTION_NAME }}
+      TF_VAR_CLOUD_FRONT_DEFAULT_VARS:  ${{ vars.TF_VAR_CLOUD_FRONT_DEFAULT_VARS }}
+      TF_VAR_PLATFORM_TAGS:             ${{ vars.TF_VAR_PLATFORM_TAGS }}
+      TF_VAR_TENANT_VARS:               ${{ vars.TF_VAR_TENANT_VARS }}
+      ACCOUNT_ID: ${{ vars.ACCOUNT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        name: Configure AWS IdP Credentials
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.ACCOUNT_ID }}:role/AWS-Terratest-Static-Site-Apply-Role
+          role-session-name: GitHubActions
+          retry-max-attempts: 5
+          aws-region: eu-west-2
+
+      - name: Download Go Modules
+        run: |
+          cd tests
+          go mod download
+
+      - name: Run Terratest
+        run: |
+          cd tests
+          go test -v -timeout 45m
