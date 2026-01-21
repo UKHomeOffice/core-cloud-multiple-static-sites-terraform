@@ -18,11 +18,14 @@ import (
 )
 
 const (
-	maxAttempts = 30
-	delay       = 10 * time.Second
+	maxAttempts      = 30
+	delay            = 10 * time.Second
+	contentType      = "Content-Type"
+	textHtml         = "text/html"
+	GETAboutIndex200 = "GET /about/index.html should return 200 from CloudFront"
 )
 
-func Test_Cloudfront_Function(t *testing.T) {
+func TestCloudfrontFunction(t *testing.T) {
 	t.Parallel()
 
 	tfOpts := helpers.TFOptions(t)
@@ -73,7 +76,7 @@ func Test_Cloudfront_Function(t *testing.T) {
 		}
 
 		for _, it := range items {
-			log.Printf("[S3] Seeding object: bucket=%s key=%s content-type=text/html", bucketName, it.Key)
+			log.Printf("[S3] Seeding object: bucket=%s key=%s content-type=%s", bucketName, it.Key, textHtml)
 		}
 		helpers.SeedHTMLObjects(t, context, s3, bucketName, items, region)
 		log.Printf("[S3] Seed complete: %d items written", len(items))
@@ -89,12 +92,12 @@ func Test_Cloudfront_Function(t *testing.T) {
 			urlRoot := baseURL + "/"
 			rootResponseStatus, rootResponseBody, rootHeaders := helpers.HttpGetWithRetry(t, urlRoot, maxAttempts, delay, http.StatusOK)
 			require.Equal(t, http.StatusOK, rootResponseStatus, "GET / should return 200 from CloudFront")
-			assert.Contains(t, rootHeaders.Get("Content-Type"), "text/html", "GET / should return HTML")
+			assert.Contains(t, rootHeaders.Get(contentType), textHtml, "GET / should return HTML")
 
 			urlIndex := baseURL + "/index.html"
 			indexResponseStatus, indexResponseBody, indexHeaders := helpers.HttpGetWithRetry(t, urlIndex, maxAttempts, delay, http.StatusOK)
 			require.Equal(t, http.StatusOK, indexResponseStatus, "GET /index.html should return 200 from CloudFront")
-			assert.Contains(t, indexHeaders.Get("Content-Type"), "text/html", "GET /index.html should return HTML")
+			assert.Contains(t, indexHeaders.Get(contentType), textHtml, "GET /index.html should return HTML")
 
 			// Same content for both paths
 			assert.Equal(t, indexResponseBody, rootResponseBody,
@@ -107,13 +110,13 @@ func Test_Cloudfront_Function(t *testing.T) {
 			urlSlash := baseURL + "/about/"
 			slashResponseStatus, slashResponseBody, slashHeaders := helpers.HttpGetWithRetry(t, urlSlash, maxAttempts, delay, http.StatusOK)
 			require.Equal(t, http.StatusOK, slashResponseStatus, "GET /about/ should return 200 from CloudFront")
-			assert.Contains(t, slashHeaders.Get("Content-Type"), "text/html", "GET /about/ should return HTML")
+			assert.Contains(t, slashHeaders.Get(contentType), textHtml, "GET /about/ should return HTML")
 
 			// GET "/about/index.html"
 			urlIndex := baseURL + "/about/index.html"
 			indexResponseStatus, indexResponseBody, indexHeaders := helpers.HttpGetWithRetry(t, urlIndex, maxAttempts, delay, http.StatusOK)
-			require.Equal(t, http.StatusOK, indexResponseStatus, "GET /about/index.html should return 200 from CloudFront")
-			assert.Contains(t, indexHeaders.Get("Content-Type"), "text/html", "GET /about/index.html should return HTML")
+			require.Equal(t, http.StatusOK, indexResponseStatus, GETAboutIndex200)
+			assert.Contains(t, indexHeaders.Get(contentType), textHtml, "GET /about/index.html should return HTML")
 
 			// Same content for both paths
 			assert.Equal(t, indexResponseBody, slashResponseBody,
@@ -126,13 +129,13 @@ func Test_Cloudfront_Function(t *testing.T) {
 			urlNoSlash := baseURL + "/about"
 			noSlashResponseStatus, noSlashResponseBody, noSlashHeaders := helpers.HttpGetWithRetry(t, urlNoSlash, maxAttempts, delay, http.StatusOK)
 			require.Equal(t, http.StatusOK, noSlashResponseStatus, "GET /about should return 200 from CloudFront")
-			assert.Contains(t, noSlashHeaders.Get("Content-Type"), "text/html", "GET /about should return HTML")
+			assert.Contains(t, noSlashHeaders.Get(contentType), textHtml, "GET /about should return HTML")
 
 			// GET "/about/index.html"
 			urlIndex := baseURL + "/about/index.html"
 			indexResponseStatus, indexResponseBody, indexHeaders := helpers.HttpGetWithRetry(t, urlIndex, maxAttempts, delay, http.StatusOK)
-			require.Equal(t, http.StatusOK, indexResponseStatus, "GET /about/index.html should return 200 from CloudFront")
-			assert.Contains(t, indexHeaders.Get("Content-Type"), "text/html", "GET /about/index.html should return HTML")
+			require.Equal(t, http.StatusOK, indexResponseStatus, GETAboutIndex200)
+			assert.Contains(t, indexHeaders.Get(contentType), textHtml, "GET /about/index.html should return HTML")
 
 			// Same content for both paths
 			assert.Equal(t, indexResponseBody, noSlashResponseBody,
@@ -146,13 +149,13 @@ func Test_Cloudfront_Function(t *testing.T) {
 			indexResponseStatus, indexResponseBody, indexHeaders := helpers.HttpGetWithRetry(t, urlIndex, maxAttempts, delay, http.StatusOK)
 
 			// Should be served directly (no rewrite / redirect)
-			require.Equal(t, http.StatusOK, indexResponseStatus, "GET /about/index.html should return 200 from CloudFront")
+			require.Equal(t, http.StatusOK, indexResponseStatus, GETAboutIndex200)
 			assert.NotContains(t,
 				[]int{http.StatusMovedPermanently, http.StatusFound, http.StatusTemporaryRedirect, http.StatusPermanentRedirect},
 				indexResponseStatus,
 				"Direct file request should not be redirected",
 			)
-			assert.Contains(t, indexHeaders.Get("Content-Type"), "text/html", "GET /about/index.html should return HTML")
+			assert.Contains(t, indexHeaders.Get(contentType), textHtml, "GET /about/index.html should return HTML")
 
 			// Ensure we got the seeded content for about/index.html
 			assert.Contains(t, indexResponseBody, "About page index",
@@ -165,7 +168,7 @@ func Test_Cloudfront_Function(t *testing.T) {
 			urlSlash := baseURL + "/nonexistent/"
 			slashResponseStatus, bodySlash, hdrSlash := helpers.HttpGetWithRetry(t, urlSlash, maxAttempts, delay, http.StatusNotFound)
 			log.Printf("[CF] GET %s -> status=%d content-type=%s length=%d",
-				urlSlash, slashResponseStatus, hdrSlash.Get("Content-Type"), len(bodySlash))
+				urlSlash, slashResponseStatus, hdrSlash.Get(contentType), len(bodySlash))
 			assert.Contains(t, []int{http.StatusForbidden, http.StatusNotFound}, slashResponseStatus,
 				"GET /nonexistent/ should return 403 or 404")
 
@@ -173,7 +176,7 @@ func Test_Cloudfront_Function(t *testing.T) {
 			urlIndex := baseURL + "/nonexistent/index.html"
 			indexResponseStatus, indexResponseBody, indexHeaders := helpers.HttpGetWithRetry(t, urlIndex, maxAttempts, delay, http.StatusNotFound)
 			log.Printf("[CF] GET %s -> status=%d content-type=%s length=%d",
-				urlIndex, indexResponseStatus, indexHeaders.Get("Content-Type"), len(indexResponseBody))
+				urlIndex, indexResponseStatus, indexHeaders.Get(contentType), len(indexResponseBody))
 			assert.Contains(t, []int{http.StatusForbidden, http.StatusNotFound}, indexResponseStatus,
 				"GET /nonexistent/index.html should return 403 or 404")
 		})
