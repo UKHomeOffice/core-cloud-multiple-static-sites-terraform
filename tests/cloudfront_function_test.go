@@ -18,11 +18,13 @@ import (
 )
 
 const (
-	maxAttempts      = 30
-	delay            = 10 * time.Second
-	contentType      = "Content-Type"
-	textHtml         = "text/html"
-	GETAboutIndex200 = "GET /about/index.html should return 200 from CloudFront"
+	maxAttempts       = 30
+	delay             = 10 * time.Second
+	contentType       = "Content-Type"
+	textHtml          = "text/html"
+	GETAboutIndex200  = "GET /about/index.html should return 200 from CloudFront"
+	GETAboutIndexHtml = "GET /about/index.html should return HTML"
+	aboutIndex        = "/about/index.html"
 )
 
 func TestCloudfrontFunction(t *testing.T) {
@@ -113,10 +115,10 @@ func TestCloudfrontFunction(t *testing.T) {
 			assert.Contains(t, slashHeaders.Get(contentType), textHtml, "GET /about/ should return HTML")
 
 			// GET "/about/index.html"
-			urlIndex := baseURL + "/about/index.html"
+			urlIndex := baseURL + aboutIndex
 			indexResponseStatus, indexResponseBody, indexHeaders := helpers.HttpGetWithRetry(t, urlIndex, maxAttempts, delay, http.StatusOK)
 			require.Equal(t, http.StatusOK, indexResponseStatus, GETAboutIndex200)
-			assert.Contains(t, indexHeaders.Get(contentType), textHtml, "GET /about/index.html should return HTML")
+			assert.Contains(t, indexHeaders.Get(contentType), textHtml, GETAboutIndexHtml)
 
 			// Same content for both paths
 			assert.Equal(t, indexResponseBody, slashResponseBody,
@@ -132,10 +134,10 @@ func TestCloudfrontFunction(t *testing.T) {
 			assert.Contains(t, noSlashHeaders.Get(contentType), textHtml, "GET /about should return HTML")
 
 			// GET "/about/index.html"
-			urlIndex := baseURL + "/about/index.html"
+			urlIndex := baseURL + aboutIndex
 			indexResponseStatus, indexResponseBody, indexHeaders := helpers.HttpGetWithRetry(t, urlIndex, maxAttempts, delay, http.StatusOK)
 			require.Equal(t, http.StatusOK, indexResponseStatus, GETAboutIndex200)
-			assert.Contains(t, indexHeaders.Get(contentType), textHtml, "GET /about/index.html should return HTML")
+			assert.Contains(t, indexHeaders.Get(contentType), textHtml, GETAboutIndexHtml)
 
 			// Same content for both paths
 			assert.Equal(t, indexResponseBody, noSlashResponseBody,
@@ -145,7 +147,7 @@ func TestCloudfrontFunction(t *testing.T) {
 		// Verify that direct file requests (/about/index.html) are not rewritten
 		t.Run("Test_CloudFront_Direct_File_Request_NoRewrite", func(t *testing.T) {
 			// GET "/about/index.html" (explicit file request)
-			urlIndex := baseURL + "/about/index.html"
+			urlIndex := baseURL + aboutIndex
 			indexResponseStatus, indexResponseBody, indexHeaders := helpers.HttpGetWithRetry(t, urlIndex, maxAttempts, delay, http.StatusOK)
 
 			// Should be served directly (no rewrite / redirect)
@@ -155,7 +157,7 @@ func TestCloudfrontFunction(t *testing.T) {
 				indexResponseStatus,
 				"Direct file request should not be redirected",
 			)
-			assert.Contains(t, indexHeaders.Get(contentType), textHtml, "GET /about/index.html should return HTML")
+			assert.Contains(t, indexHeaders.Get(contentType), textHtml, GETAboutIndexHtml)
 
 			// Ensure we got the seeded content for about/index.html
 			assert.Contains(t, indexResponseBody, "About page index",
